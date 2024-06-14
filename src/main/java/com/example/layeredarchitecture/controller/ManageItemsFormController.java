@@ -146,8 +146,8 @@ public class ManageItemsFormController {
             pstm.setString(1, code);
             pstm.executeUpdate();*/
           //  ItemDAOimpl itemDAOimpl=new ItemDAOimpl();
-            ItemDTO itemDTO=new ItemDTO(code);
-            boolean isdelete=itemDAO.deleteitem(itemDTO);
+           // ItemDTO itemDTO=new ItemDTO(code);
+            boolean isdelete=itemDAO.deleteitem(code);
 
 if(isdelete==true) {
     tblItems.getItems().remove(tblItems.getSelectionModel().getSelectedItem());

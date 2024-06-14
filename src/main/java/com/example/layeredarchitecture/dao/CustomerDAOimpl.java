@@ -27,11 +27,11 @@ public class CustomerDAOimpl implements CustomerDAO {
       return  pstm.executeUpdate()>0;
     }
 
-    public int deleteCustomer(CustomerDTO customerDTO) throws SQLException, ClassNotFoundException {
+    public boolean deleteCustomer(String id) throws SQLException, ClassNotFoundException {
         Connection connection = DBConnection.getDbConnection().getConnection();
         PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
-        pstm.setString(1, customerDTO.getId());
-      return   pstm.executeUpdate();
+        pstm.setString(1, id);
+      return   pstm.executeUpdate()>0;
     }
 
     public String genaratenewid() throws SQLException, ClassNotFoundException {

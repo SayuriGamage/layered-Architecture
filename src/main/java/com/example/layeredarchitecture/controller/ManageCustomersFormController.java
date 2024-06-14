@@ -212,7 +212,7 @@ if(issave==true) {
     }
 
 
-    public void btnDelete_OnAction(ActionEvent actionEvent) {
+    public void btnDelete_OnAction(ActionEvent actionEvent)  {
         /*Delete Customer*/
         String id = tblCustomers.getSelectionModel().getSelectedItem().getId();
         try {
@@ -225,12 +225,13 @@ if(issave==true) {
             pstm.executeUpdate();*/
          //   CustomerDAOimpl customerDAOimpl=new CustomerDAOimpl();
 
-          customerDAO.deleteCustomer(new CustomerDTO(id));
+         boolean isdelete= customerDAO.deleteCustomer(id);
+         if (isdelete==true) {
 
-          tblCustomers.getItems().remove(tblCustomers.getSelectionModel().getSelectedItem());
-            tblCustomers.getSelectionModel().clearSelection();
-            initUI();
-
+             tblCustomers.getItems().remove(tblCustomers.getSelectionModel().getSelectedItem());
+             tblCustomers.getSelectionModel().clearSelection();
+             initUI();
+         }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to delete the customer " + id).show();
         } catch (ClassNotFoundException e) {

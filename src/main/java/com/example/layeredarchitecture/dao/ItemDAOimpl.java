@@ -49,10 +49,10 @@ public class ItemDAOimpl implements ItemDAO{
        return pstm.executeUpdate()>0;
     }
 
-    public boolean deleteitem(ItemDTO itemDTO) throws SQLException, ClassNotFoundException {
+    public boolean deleteitem(String code) throws SQLException, ClassNotFoundException {
         Connection connection = DBConnection.getDbConnection().getConnection();
         PreparedStatement pstm = connection.prepareStatement("DELETE FROM Item WHERE code=?");
-        pstm.setString(1, itemDTO.getCode());
+        pstm.setString(1, code);
        return pstm.executeUpdate()>0;
     }
 

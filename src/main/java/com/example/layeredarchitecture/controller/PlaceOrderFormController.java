@@ -56,7 +56,7 @@ public class PlaceOrderFormController {
     ItemDAO itemDAO=new ItemDAOimpl();
     CustomerDAO customerDAO=new CustomerDAOimpl();
     OrderDAO orderDAO=new OrderDAOimpl();
-    OrderdetailDAO orderDetailDAO = new OrderdetailDAOimpl();
+    //OrderdetailDAO orderDetailDAO = new OrderdetailDAOimpl();
 
 
     public void initialize() throws SQLException, ClassNotFoundException {
@@ -354,69 +354,72 @@ public class PlaceOrderFormController {
         calculateTotal();
     }
 
-    public boolean saveOrder(String orderId, LocalDate orderDate, String customerId, List<OrderDetailDTO> orderDetails) throws SQLException, ClassNotFoundException {
-        Connection connection = null;
 
+    public boolean saveOrder(String orderId, LocalDate orderDate, String customerId, List<OrderDetailDTO> orderDetails) {
+        /*Transaction*/
+        Connection connection = null;
         try {
             connection = DBConnection.getDbConnection().getConnection();
+            PreparedStatement stm = connection.prepareStatement("SELECT oid FROM `Orders` WHERE oid=?");
+            stm.setString(1, orderId);
+            /*if order id already exist*/
+            if (stm.executeQuery().next()) {
 
-            // Check if the order ID already exists
-            OrderDTO orderDTO = new OrderDTO(orderId, orderDate, customerId);
-            boolean orderExists = orderDAO.selectid(orderDTO);
-
-            if (orderExists) {
-                connection.setAutoCommit(false);
             }
 
-            // Save order
-            boolean orderSaved = orderDAO.save(orderDTO);
-            if (!orderSaved) {
+            connection.setAutoCommit(false);
+            stm = connection.prepareStatement("INSERT INTO `Orders` (oid, date, customerID) VALUES (?,?,?)");
+            stm.setString(1, orderId);
+            stm.setDate(2, Date.valueOf(orderDate));
+            stm.setString(3, customerId);
+
+            if (stm.executeUpdate() != 1) {
                 connection.rollback();
                 connection.setAutoCommit(true);
                 return false;
             }
 
-            // Save order details
-        //    OrderdetailDAOimpl orderDetailDAOimpl = new OrderdetailDAOimpl();
+            stm = connection.prepareStatement("INSERT INTO OrderDetails (oid, itemCode, unitPrice, qty) VALUES (?,?,?,?)");
 
-            boolean orderDetailsSaved = orderDetailDAO.savesorderdetails(orderDetails, orderId);
-            if (!orderDetailsSaved) {
-                connection.rollback();
-                connection.setAutoCommit(true);
-                return false;
-            }
-
-            // Update item quantities
             for (OrderDetailDTO detail : orderDetails) {
+                stm.setString(1, orderId);
+                stm.setString(2, detail.getItemCode());
+                stm.setBigDecimal(3, detail.getUnitPrice());
+                stm.setInt(4, detail.getQty());
+
+                if (stm.executeUpdate() != 1) {
+                    connection.rollback();
+                    connection.setAutoCommit(true);
+                    return false;
+                }
+
+//                //Search & Update Item
                 ItemDTO item = findItem(detail.getItemCode());
                 item.setQtyOnHand(item.getQtyOnHand() - detail.getQty());
 
-                ItemDAOimpl itemDAOimpl = new ItemDAOimpl();
-                boolean itemUpdated = itemDAOimpl.update(item);
-                if (!itemUpdated) {
+                PreparedStatement pstm = connection.prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?");
+                pstm.setString(1, item.getDescription());
+                pstm.setBigDecimal(2, item.getUnitPrice());
+                pstm.setInt(3, item.getQtyOnHand());
+                pstm.setString(4, item.getCode());
+
+                if (!(pstm.executeUpdate() > 0)) {
                     connection.rollback();
                     connection.setAutoCommit(true);
                     return false;
                 }
             }
 
-            // Commit transaction
             connection.commit();
             connection.setAutoCommit(true);
             return true;
 
-        } catch (SQLException | ClassNotFoundException e) {
-            if (connection != null) {
-                connection.rollback();
-                connection.setAutoCommit(true);
-            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            throw e;
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
         }
+        return false;
     }
 
 

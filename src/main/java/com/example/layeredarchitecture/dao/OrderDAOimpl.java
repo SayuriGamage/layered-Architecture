@@ -23,29 +23,8 @@ public class OrderDAOimpl implements OrderDAO{
        stm.setString(1, orderDTO.getOrderId());
        return stm.executeQuery().next();
     }
-  /* public boolean save(OrderDTO orderDTO) throws SQLException, ClassNotFoundException {
-       Connection connection = DBConnection.getDbConnection().getConnection();
-     PreparedStatement  stm = connection.prepareStatement("INSERT INTO `Orders` (oid, date, customerID) VALUES (?,?,?)");
-       stm.setString(1, orderDTO.getOrderId());
-       stm.setDate(2, Date.valueOf(orderDTO.getOrderDate()));
-       stm.setString(3, orderDTO.getCustomerId());
-       return stm.executeUpdate()>0;
-   }*/
-  public boolean save(OrderDTO orderDTO) throws SQLException, ClassNotFoundException {
-      Connection connection = null;
-      PreparedStatement stm = null;
-      try {
-          connection = DBConnection.getDbConnection().getConnection();
-          stm = connection.prepareStatement("INSERT INTO `Orders` (oid, date, customerID) VALUES (?,?,?)");
-          stm.setString(1, orderDTO.getOrderId());
-          stm.setDate(2, Date.valueOf(orderDTO.getOrderDate()));
-          stm.setString(3, orderDTO.getCustomerId());
-          return stm.executeUpdate() > 0;
-      } finally {
-          if (stm != null) stm.close();
-          if (connection != null) connection.close();
-      }
-  }
+
+
 
 
 }

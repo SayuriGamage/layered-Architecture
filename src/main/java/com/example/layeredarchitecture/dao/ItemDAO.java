@@ -16,7 +16,7 @@ public interface ItemDAO {
 
     public boolean updateitem(ItemDTO itemDTO) throws SQLException, ClassNotFoundException ;
 
-    public boolean deleteitem(ItemDTO itemDTO) throws SQLException, ClassNotFoundException ;
+    public boolean deleteitem(String code) throws SQLException, ClassNotFoundException ;
     public boolean executeitem(ItemDTO itemDTO) throws SQLException, ClassNotFoundException ;
 
     public String genarateid() throws SQLException, ClassNotFoundException ;
@@ -26,7 +26,4 @@ public interface ItemDAO {
 
     ItemDTO finditem(String code) throws SQLException, ClassNotFoundException;
 
-  //  boolean update(List<OrderDetailDTO> orderDetails) throws SQLException, ClassNotFoundException;
-
-  //  boolean update(List<OrderDetailDTO> orderDetails, ItemDTO item) throws SQLException, ClassNotFoundException;
 }
