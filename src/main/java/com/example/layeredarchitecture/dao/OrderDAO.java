@@ -14,5 +14,6 @@ public interface OrderDAO {
     boolean selectid(OrderDTO orderDTO) throws SQLException, ClassNotFoundException;
 
 
+    boolean saveOrder(OrderDTO orderDTO) throws SQLException, ClassNotFoundException;
 
 }
