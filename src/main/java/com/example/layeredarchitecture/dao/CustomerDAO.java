@@ -23,4 +23,5 @@ public interface CustomerDAO {
 
     ArrayList<CustomerDTO> getcustomerids() throws SQLException, ClassNotFoundException;
 
+    CustomerDTO selectCustomer(String newValue) throws SQLException, ClassNotFoundException;
 }
