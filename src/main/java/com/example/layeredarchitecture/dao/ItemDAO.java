@@ -30,5 +30,7 @@ public interface ItemDAO {
 
     ItemDTO findItemByCode(String itemCode) throws SQLException, ClassNotFoundException;
 
-    boolean updateItem(ItemDTO item) throws SQLException, ClassNotFoundException;
+
+    boolean isItemSearchedAndUpdated(Connection connection, List<OrderDetailDTO> orderDetails) throws SQLException, ClassNotFoundException;
+
 }

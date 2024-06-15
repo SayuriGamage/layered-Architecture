@@ -12,15 +12,28 @@ import java.util.List;
 
 
 public class OrderdetailDAOimpl implements OrderdetailDAO {
-   public boolean saveOrderDetail(OrderDetailDTO orderDetailDTO,String orderId) throws SQLException, ClassNotFoundException {
-       Connection connection = DBConnection.getDbConnection().getConnection();
-    PreparedStatement   stm = connection.prepareStatement("INSERT INTO OrderDetails (oid, itemCode, unitPrice, qty) VALUES (?,?,?,?)");
+    ItemDAO itemDAO=new ItemDAOimpl();
+  public   boolean isDataInsertIntoOrderDetail(List<OrderDetailDTO> orderDetails, String orderId, Connection connection) throws SQLException, ClassNotFoundException {
+      PreparedStatement stm = connection.prepareStatement("INSERT INTO OrderDetails (oid, itemCode, unitPrice, qty) VALUES (?,?,?,?)");
 
-       stm.setString(1, orderId);
-       stm.setString(2, orderDetailDTO.getItemCode());
-       stm.setBigDecimal(3, orderDetailDTO.getUnitPrice());
-       stm.setInt(4, orderDetailDTO.getQty());
-       return stm.executeUpdate() == 1;
-   }
+      for (OrderDetailDTO detail : orderDetails) {
+          stm.setString(1, orderId);
+          stm.setString(2, detail.getItemCode());
+          stm.setBigDecimal(3, detail.getUnitPrice());
+          stm.setInt(4, detail.getQty());
+
+          if (stm.executeUpdate() != 1) {
+              return false;
+          }
+
+//                //Search & Update Item
+          boolean isItemSearchedAndUpdated = itemDAO.isItemSearchedAndUpdated(connection,orderDetails);
+          if (!isItemSearchedAndUpdated) {
+              return false;
+          }
+      }
+      return true;
+  }
+
 
 }

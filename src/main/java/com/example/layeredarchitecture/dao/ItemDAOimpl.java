@@ -141,13 +141,29 @@ public class ItemDAOimpl implements ItemDAO{
       }
 return null;
     }
-   public boolean updateItem(ItemDTO item) throws SQLException, ClassNotFoundException {
-       Connection connection = DBConnection.getDbConnection().getConnection();
-       PreparedStatement pstm = connection.prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?");
-       pstm.setString(1, item.getDescription());
-       pstm.setBigDecimal(2, item.getUnitPrice());
-       pstm.setInt(3, item.getQtyOnHand());
-       pstm.setString(4, item.getCode());
-       return pstm.executeUpdate()>0;
-   }
-}
+  public   boolean isItemSearchedAndUpdated(Connection connection, List<OrderDetailDTO> orderDetails) throws SQLException, ClassNotFoundException {
+      String code = null;
+      int qty = 0;
+      for(OrderDetailDTO detail : orderDetails){
+          code=detail.getItemCode();
+          qty=detail.getQty();
+      }
+      ItemDTO item = findItemByCode(code);
+      item.setQtyOnHand(item.getQtyOnHand() - qty);
+
+      PreparedStatement pstm = connection.prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?");
+      pstm.setString(1, item.getDescription());
+      pstm.setBigDecimal(2, item.getUnitPrice());
+      pstm.setInt(3, item.getQtyOnHand());
+      pstm.setString(4, item.getCode());
+
+      if (!(pstm.executeUpdate() > 0)) {
+          return false;
+      } else {
+          return true;
+      }
+  }
+
+
+    }
+
